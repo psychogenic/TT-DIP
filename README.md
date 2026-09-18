@@ -15,7 +15,7 @@ It offers 2 modes:
 
 In this mode, *you* get to control the ASIC MUX and select the project, by controlling the multiplexer pins.
 
-In addition, all the I/O, clock and reset and available to you to interact with the project.
+In addition, all the I/O, clock and reset are available to you to interact with the project.
 
 ## Auto-configured
 
