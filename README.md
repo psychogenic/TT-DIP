@@ -1,6 +1,6 @@
 # Tiny Tapeout DIP firmware
 
-The TT DIP is a breakout for Chip on Board (CoB) ASICs that let's you drop in the ASIC to a breadboard or circuit.
+The TT DIP is a breakout for Chip on Board (CoB) ASICs that lets you drop in the ASIC to a breadboard or circuit.
 
 ![DIP](images/TTDIP.png)
 
