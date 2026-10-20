@@ -27,6 +27,9 @@ public:
 
 	void delayMs(uint16_t millis);
 
+	void modeInputPull(uint8_t pin, bool pull_up=true);
+	void modeInput(uint8_t pin);
+	void modeOutput(uint8_t pin, GPIOSpeed_TypeDef slew=GPIO_Speed_10MHz);
 
 	void writeHigh(uint8_t pin);
 	void writeLow(uint8_t pin);

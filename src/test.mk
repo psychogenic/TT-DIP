@@ -12,6 +12,7 @@ LDFLAGS  ?= -flto -Wl,--print-memory-usage -Wl,-Map=test.map -static-libgcc
 LDLIBS += -lncurses 
 
 SRCS := debugmain.cpp driver_api.cpp Driver.cpp \
+		tinytapeout/settings.c \
 		tinytapeout/Globals.cpp \
 		tinytapeout/Command.cpp \
 		tinytapeout/CommandInterpreter.cpp \
@@ -20,6 +21,7 @@ SRCS := debugmain.cpp driver_api.cpp Driver.cpp \
 		platform/Clock.cpp \
 		platform/IC.cpp
 OBJS := $(SRCS:.cpp=.o)
+OBJS := $(OBJS:.c=.o)
 
 .PHONY: all clean
 all: test

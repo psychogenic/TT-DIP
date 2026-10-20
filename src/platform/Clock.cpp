@@ -8,9 +8,15 @@
 
 #include "includes/platform/Clock.h"
 #include "includes/settings.h"
+#include "includes/Globals.h"
 
 extern "C" {
 
+#ifdef DESKTOP_DEBUG
+
+#define PWM_PA3_Init(hz)	hz
+#define Timer_Interrupt_Init(hz)	hz
+#else
 static uint8_t tog_count = 0;
 void TIM3_IRQHandler(void) __attribute__((interrupt));
 void TIM3_IRQHandler(void)
@@ -21,6 +27,7 @@ void TIM3_IRQHandler(void)
 	tog_count++;
 
 }
+#endif
 }
 
 
@@ -183,19 +190,20 @@ ClockRateHz Clock::start(ClockRateHz hz)
 	if (SystemSettings.clock_rst_driven_externally) {
 		return 0;
 	}
-
-#ifdef DESKTOP_DEBUG
 	if (hz == 0) {
 		stop();
 		return 0;
 	}
+
+#ifdef DESKTOP_DEBUG
+	DEBUG_CLOCK_OUT("(Not) clocking at %lu Hz\r\n", (unsigned long)hz);
 	clock_rate_hz = hz;
-#else
+	return hz;
+#endif
 
 	// uint32_t pwm_actual = PWM_PA3_Init(1000); // 1 kHz, 50% duty, on PA3
 	// printf("PWM_PA3_Init(1000) actual %lu Hz\n", (unsigned long)pwm_actual);
-
-    funPinMode(TTDIP_PIN_CLOCK_PIN, GPIO_CFGLR_OUT_50Mhz_PP);
+	TinyTapeout::Globals::chip()->modeOutput(TTDIP_PIN_CLOCK_PIN, GPIO_Speed_50MHz);
 #ifdef TTDIP_CLOCK_USE_PA3
     uint32_t actual_hz = PWM_PA3_Init(hz);
 #else
@@ -203,8 +211,6 @@ ClockRateHz Clock::start(ClockRateHz hz)
 #endif
 	DEBUG_CLOCK_OUT("Clocking at %lu Hz\r\n", (unsigned long)actual_hz);
 
-
-#endif
     return clock_rate_hz;
 }
 void Clock::stop(void)
@@ -212,8 +218,10 @@ void Clock::stop(void)
 	if (!clock_rate_hz) {
 		return;
 	}
-#ifndef DESKTOP_DEBUG
-    funPinMode(TTDIP_PIN_CLOCK_PIN, GPIO_CFGLR_IN_FLOAT);
+#ifdef TTDIP_CLOCK_PULLUP_ENABLE
+	TinyTapeout::Globals::chip()->modeInputPull(TTDIP_PIN_CLOCK_PIN, true);
+#else
+	TinyTapeout::Globals::chip()->modeInput(TTDIP_PIN_CLOCK_PIN);
 #endif
     clock_rate_hz = 0;
 }

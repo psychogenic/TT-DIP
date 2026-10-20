@@ -109,7 +109,7 @@ bool Command::execute() const {
 		case DUMP_STATE:
 			snprintf(swapstr, 63, "\r\ntt.design=%d\r\ntt.subtile=-1\r\n",Globals::projectMUX()->selected() );
 			USBSerial::outputString(swapstr);
-			snprintf(swapstr, 63, "tt.clk_freq=%ld\r\n",Globals::chip()->clock().rate());
+			snprintf(swapstr, 63, "tt.clk_freq=%ld\r\n", (long int)Globals::chip()->clock().rate());
 			USBSerial::outputString(swapstr);
 			USBSerial::outputInfo("Dumping state");
 			break;
@@ -151,7 +151,7 @@ bool Command::execute() const {
 			Globals::chip()->clock().stop();
 
 			if (parameters[0]) {
-				OUTPUT_INFO("Starting clock @ %ld Hz\r\n", parameters[0]);
+				OUTPUT_INFO("Starting clock @ %ld Hz\r\n", (long int)parameters[0]);
 				return Globals::chip()->clock().start(parameters[0]);
 			}
 			USBSerial::outputInfo("Stopped clocking");
@@ -159,7 +159,7 @@ bool Command::execute() const {
 
 
 		case SELECT_DESIGN:
-			OUTPUT_INFO("Select design %ld \r\n",parameters[0]);
+			OUTPUT_INFO("Select design %ld \r\n", (long int)parameters[0]);
 			if (num_params < 1) {
 				USBSerial::outputError("Need param clock rate");
 				return false;
@@ -170,7 +170,7 @@ bool Command::execute() const {
 			if (num_params < 2 || ! parameters[1]) {
 				return true;
 			}
-			OUTPUT_INFO("Starting clock @  %ld Hz\r\n", parameters[1]);
+			OUTPUT_INFO("Starting clock @  %ld Hz\r\n", (long int)parameters[1]);
 			return Globals::chip()->clock().start(parameters[1]);
 
 
@@ -290,7 +290,7 @@ void Command::dump() const {
 	if (num_params) {
 		USBSerial::outputDebug(" Parameters:");
 		for (i=0; i<num_params; i++) {
-			snprintf(buf, 32, "\t %u: %ld", i, parameters[i]);
+			snprintf(buf, 32, "\t %u: %ld", i, (long int)parameters[i]);
 			USBSerial::outputDebug(buf);
 		}
 	}

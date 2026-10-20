@@ -10,7 +10,9 @@
 #define SRC_INCLUDES_PLATFORM_PLATFORMINCLUDES_H_
 
 #include "../TTDIPincludes.h"
-#ifndef DESKTOP_DEBUG
+#ifdef DESKTOP_DEBUG
+#include "desktop.h"
+#else
 #include "ch32fun.h"
 #endif
 
