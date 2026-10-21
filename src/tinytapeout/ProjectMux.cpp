@@ -40,11 +40,11 @@ void ProjectMux::enable(DesignID id) {
 	disable();
 	reset_and_clock_mux(id);
 
-#if TT_DIP_RESET_DESIGN_ON_LOAD
-	USBSerial::outputDebug("Auto project reset on enable");
-	Globals::chip()->projectReset(true);
-	Globals::chip()->manualClock(5);
-#endif
+	if (SystemSettings.reset_design_on_load) {
+		USBSerial::outputDebug("Auto project reset on enable");
+		Globals::chip()->projectReset(true);
+		Globals::chip()->manualClock(TTDIP_NUM_CLOCKS_ON_PROJ_RESET);
+	}
 	Globals::chip()->projectReset(false);
 	selected_design = id;
 

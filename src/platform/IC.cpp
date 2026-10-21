@@ -8,7 +8,7 @@
 
 #include "includes/platform/IC.h"
 #include "includes/USBSerial.h"
-#include "includes/settings.h"
+#include "includes/Globals.h"
 namespace Platform {
 
 IC::IC() {
@@ -19,38 +19,32 @@ bool IC::init() {
 	SystemInit();
 
 	funGpioInitAll();
-    // funPinMode(TTDIP_PIN_CLOCK_PIN, GPIO_CFGLR_OUT_50Mhz_PP);
-
-	clockAndResetControl(!SystemSettings.clock_rst_driven_externally);
-	muxControl(!SystemSettings.mux_driven_externally);
-
 
 	return true;
 }
 void IC::clockAndResetControl(bool enable) {
 
 	if (enable) {
-
-		funPinMode(TTDIP_PIN_PROJECT_RESET, GPIO_CFGLR_OUT_10Mhz_PP);
-	    funPinMode(TTDIP_PIN_CLOCK_PIN, GPIO_CFGLR_OUT_50Mhz_PP);
+		modeOutput(TTDIP_PIN_PROJECT_RESET, GPIO_Speed_10MHz);
+		modeOutput(TTDIP_PIN_CLOCK_PIN, GPIO_Speed_50MHz);
 	} else {
 
-		funPinMode(TTDIP_PIN_PROJECT_RESET, GPIO_CNF_IN_PUPD);
-	    funPinMode(TTDIP_PIN_CLOCK_PIN, GPIO_CNF_IN_PUPD);
+		modeInputPull(TTDIP_PIN_PROJECT_RESET, true);
+		modeInputPull(TTDIP_PIN_CLOCK_PIN, true);
 	}
 
 }
 void IC::muxControl(bool enable) {
 
 	if (enable) {
-
-		funPinMode(TTDIP_PIN_MUX_EN, GPIO_CFGLR_OUT_10Mhz_PP);
-		funPinMode(TTDIP_PIN_MUX_RESET, GPIO_CFGLR_OUT_10Mhz_PP);
-		funPinMode(TTDIP_PIN_MUX_INC, GPIO_CFGLR_OUT_50Mhz_PP);
+		modeOutput(TTDIP_PIN_MUX_EN, GPIO_Speed_10MHz);
+		modeOutput(TTDIP_PIN_MUX_RESET, GPIO_Speed_10MHz);
+		modeOutput(TTDIP_PIN_MUX_INC, GPIO_Speed_50MHz);
 	} else {
-		funPinMode(TTDIP_PIN_MUX_EN, GPIO_CNF_IN_PUPD);
-		funPinMode(TTDIP_PIN_MUX_RESET, GPIO_CNF_IN_PUPD);
-		funPinMode(TTDIP_PIN_MUX_INC, GPIO_CNF_IN_PUPD);
+		modeInputPull(TTDIP_PIN_MUX_EN, false);
+		modeInputPull(TTDIP_PIN_MUX_RESET, false);
+		modeInputPull(TTDIP_PIN_MUX_INC, true);
+
 	}
 
 }
@@ -60,7 +54,13 @@ void IC::delayMs(uint16_t millis) {
 	Delay_Ms(millis);
 
 }
+ClockRateHz IC::loadFactoryTest() {
 
+	TinyTapeout::USBSerial::outputInfo("Run Factory Test");
+	TinyTapeout::Globals::chip()->clock().stop();
+	TinyTapeout::Globals::projectMUX()->enable(TTDIP_FACTORY_TEST_DESIGNID);
+	return TinyTapeout::Globals::chip()->clock().start(TTDIP_FACTORY_TEST_CLOCKRATE);
+}
 void IC::manualClock(uint16_t times, uint16_t delay_millis) {
 	if (SystemSettings.clock_rst_driven_externally) {
 		TinyTapeout::USBSerial::outputError("Can't manual clock -- driven externally");
@@ -92,9 +92,12 @@ void IC::modeInput(uint8_t pin) {
 void IC::modeOutput(uint8_t pin, GPIOSpeed_TypeDef slew) {
 	funPinMode(PC1, slew | GPIO_CNF_OUT_PP);
 }
+uint8_t IC::digitalRead(uint8_t pin) {
+	return funDigitalRead(pin);
+}
 void IC::projectReset(bool inreset) {
 	if (SystemSettings.clock_rst_driven_externally) {
-		TinyTapeout::USBSerial::outputError("Can't reset project -- driven externally");
+		TinyTapeout::USBSerial::outputError("Can't reset -- driven externally");
 		return ;
 	}
 	if (inreset) {

@@ -28,11 +28,41 @@
  * the external drive for MUX/CLOCK (see below
  *
  */
-#define TT_DIP_DEFAULT_DESIGN_ID	0
-#define TT_DIP_DEFAULT_CLOCK_HZ		10
 
-#define TT_DIP_RESET_DESIGN_ON_LOAD	1
 
+#define TT_DIP_DEFAULT_DESIGN_ID		0
+#define TT_DIP_DEFAULT_CLOCK_HZ			10
+
+#define TT_DIP_RESET_DESIGN_ON_LOAD		1
+
+
+
+
+/* TT_DIP_AUTO_EXT_DRIVE_CHECK:
+ * if non-zero, on boot, for both the project and
+ * MUX clocks, will:
+ *   * set pin to input with pull up
+ *   * check if driven LOW
+ *   * if so, leave the pin as an input and avoid driving
+ *   related subsystem (clock/reset, or MUX lines)
+ *
+ */
+#define TT_DIP_AUTO_EXT_DRIVE_CHECK		1
+
+
+/* TT_DIP_RST_FACTORY_TEST_CHECK:
+ * if non-zero, on boot, will check whether the
+ * project reset line is held low.  If so, the
+ * factory test will be loaded and clocked
+ * (assuming neither MUX nor CLOCK are driven extenally)
+ *
+ */
+#define TT_DIP_RST_FACTORY_TEST_CHECK	1
+
+
+/* MUX and CLOCK external drive defaults
+ * May be overwritten if TT_DIP_AUTO_EXT_DRIVE_CHECK
+ */
 
 /*
  * MUX drive externally

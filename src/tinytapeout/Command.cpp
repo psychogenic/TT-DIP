@@ -10,6 +10,7 @@
 #include "includes/USBSerial.h"
 #include "includes/Globals.h"
 #include "includes/driver_api.h"
+#include "includes/settings.h"
 namespace TinyTapeout {
 
 
@@ -82,6 +83,9 @@ Command::Command(Type tp) : cmd_type(tp), num_params(0) {
 }
 
 
+#define TOSWAPSTR(...) snprintf(swapstr, 63, __VA_ARGS__)
+#define SENDSWAPSTR(...) TOSWAPSTR(__VA_ARGS__); USBSerial::outputString(swapstr)
+
 bool Command::execute() const {
 	char swapstr[64];
 
@@ -97,6 +101,7 @@ bool Command::execute() const {
 			USBSerial::outputString(        "* reset_project()                -- toggle reset           *\r\n");
 			USBSerial::outputString(        "* manual_clock()                 -- clock once             *\r\n");
 			USBSerial::outputString(        "* dump_state()                   -- take a guess           *\r\n");
+			USBSerial::outputString(        "* dump_settings()                -- current settings       *\r\n");
 			USBSerial::outputString(        "* run_factory_test()             -- load + clock fact test *\r\n");
 			USBSerial::outputString(        "************************************************************\r\n");
 			break;
@@ -107,20 +112,24 @@ bool Command::execute() const {
 
 
 		case DUMP_STATE:
-			snprintf(swapstr, 63, "\r\ntt.design=%d\r\ntt.subtile=-1\r\n",Globals::projectMUX()->selected() );
-			USBSerial::outputString(swapstr);
-			snprintf(swapstr, 63, "tt.clk_freq=%ld\r\n", (long int)Globals::chip()->clock().rate());
-			USBSerial::outputString(swapstr);
 			USBSerial::outputInfo("Dumping state");
+			SENDSWAPSTR("\r\ntt.design=%d\r\ntt.subtile=-1\r\n",Globals::projectMUX()->selected() );
+			SENDSWAPSTR("tt.clk_freq=%ld\r\n", (long int)Globals::chip()->clock().rate());
 			break;
 
+		case DUMP_SETTINGS:
+
+			USBSerial::outputInfo("Dumping settings");
+			SENDSWAPSTR("set.check_ext=%u\r\n", SystemSettings.check_ext_drive_on_boot);
+			SENDSWAPSTR("set.def_design=%ld\r\n", (long int)SystemSettings.default_design);
+			SENDSWAPSTR("set.def_clk=%ld\r\n", (long int)SystemSettings.default_clock_rate);
+			SENDSWAPSTR("set.mux_ext=%u\r\n", SystemSettings.mux_driven_externally);
+			SENDSWAPSTR("set.clk_ext=%u\r\n", SystemSettings.clock_rst_driven_externally);
+			SENDSWAPSTR("set.auto_reset_proj=%u\r\n", SystemSettings.reset_design_on_load);
+			break;
 
 		case RUN_FACTORY_TEST:
-			USBSerial::outputInfo("Run Factory Test");
-			Globals::chip()->clock().stop();
-			Globals::projectMUX()->enable(TTDIP_FACTORY_TEST_DESIGNID);
-			return Globals::chip()->clock().start(TTDIP_FACTORY_TEST_CLOCKRATE);
-
+			return Globals::chip()->loadFactoryTest();
 			break;
 
 
@@ -274,6 +283,7 @@ void Command::dump() const {
 		CommandStringMapping(Command::RESET_PROJECT, "Project Reset"),
 		CommandStringMapping(Command::MANUAL_CLOCK, "Manual Clocking"),
 		CommandStringMapping(Command::READ_ROM, "Read ROM"),
+		CommandStringMapping(Command::DUMP_SETTINGS, "Dump Settings"),
 		CommandStringMapping(Command::ABOUT, "About"),
 		CommandStringMapping(Command::RESTART, "Restart/init"),
 		CommandStringMapping(Command::NA, NULL),

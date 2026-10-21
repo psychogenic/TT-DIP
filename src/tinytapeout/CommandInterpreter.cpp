@@ -70,6 +70,7 @@ static CommandStringMapping CmdStringMatchMap[] = {
 			CommandStringMapping(Command::RESET_PROJECT, "reset_project"),
 			CommandStringMapping(Command::MANUAL_CLOCK, "manual_clock"),
 			CommandStringMapping(Command::READ_ROM, "read_rom"),
+			CommandStringMapping(Command::DUMP_SETTINGS, "dump_settings"),
 			CommandStringMapping(Command::ABOUT, "about"),
 			CommandStringMapping(Command::RESTART, "restart"),
 			CommandStringMapping(Command::SET_SYS_MUX_EXT, "set_mux_ext"),

@@ -11,7 +11,7 @@
 
 #ifdef DESKTOP_DEBUG
 /* Dummy ch32fun function definition */
-
+#define funDigitalRead(...)		1
 #define SystemInit()
 #define funGpioInitAll()
 

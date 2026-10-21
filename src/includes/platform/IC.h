@@ -10,6 +10,7 @@
 #define SRC_INCLUDES_PLATFORM_IC_H_
 
 #include "Clock.h"
+#include "../settings.h"
 namespace Platform {
 
 class IC {
@@ -22,7 +23,7 @@ public:
 	Clock & clock() { return _clk;}
 
 	void projectReset(bool inreset);
-
+	ClockRateHz loadFactoryTest();
 	void manualClock(uint16_t times=1, uint16_t delay_millis=1);
 
 	void delayMs(uint16_t millis);
@@ -33,6 +34,8 @@ public:
 
 	void writeHigh(uint8_t pin);
 	void writeLow(uint8_t pin);
+	uint8_t digitalRead(uint8_t pin);
+
 private:
 	Clock _clk;
 };

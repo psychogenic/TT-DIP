@@ -17,6 +17,11 @@ public:
 	bool init();
 	void tick();
 
+private:
+	void initExtDriveCheck();
+	bool initFactoryTestCheck();
+
+
 };
 
 } /* namespace TinyTapeout */

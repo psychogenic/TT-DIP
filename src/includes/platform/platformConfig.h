@@ -9,27 +9,44 @@
 #ifndef SRC_INCLUDES_PLATFORM_PLATFORMCONFIG_H_
 #define SRC_INCLUDES_PLATFORM_PLATFORMCONFIG_H_
 
+/* TTDIP_NUM_CLOCKS_ON_PROJ_RESET
+ * num clock toggles to do while in reset
+ */
+#define TTDIP_NUM_CLOCKS_ON_PROJ_RESET	5
+
 
 #ifndef DESKTOP_DEBUG
 /* actual MCU pins and ports */
 
 #define TTDIP_PIN_CLOCK_PORT		GPIOA
-#define TTDIP_PIN_CLOCK_PORTPIN		5
+
+/*
+ * TTDIP_PIN_CLOCK_PIN -- original proto had
+ * clock on PA5, ie the SCK line, but this blasted
+ * thing doesn't support PWM.
+ *
+ * Moved to PA3, which does... for dev, have some
+ * tweaks here to use PA5 and use a timer/irq to manually
+ * clock, ugh.
+ *
+ * TODO: FIXME -- set to PA3 for new boards
+ */
 #define TTDIP_PIN_CLOCK_PIN			PA5
 //define TTDIP_PIN_CLOCK_PIN		PA3
+
+#if TTDIP_PIN_CLOCK_PIN == PA3
+#define TTDIP_CLOCK_USE_PA3
+#define TTDIP_PIN_CLOCK_PORTPIN		3
+#else
+#define TTDIP_CLOCK_USE_TIM3
+#define TTDIP_PIN_CLOCK_PORTPIN		5
+#endif
+
 
 // Define TTDIP_CLOCK_PULLUP_ENABLE to have the
 // clock line pulled up by default, comment out
 // to float
 #define TTDIP_CLOCK_PULLUP_ENABLE
-
-
-#if TTDIP_PIN_CLOCK_PIN == PA3
-#define TTDIP_CLOCK_USE_PA3
-#else
-#define TTDIP_CLOCK_USE_TIM3
-#endif
-
 
 
 #define TTDIP_PIN_MUX_EN			PC0
