@@ -126,6 +126,7 @@ bool Command::execute() const {
 			SENDSWAPSTR("set.mux_ext=%u\r\n", SystemSettings.mux_driven_externally);
 			SENDSWAPSTR("set.clk_ext=%u\r\n", SystemSettings.clock_rst_driven_externally);
 			SENDSWAPSTR("set.auto_reset_proj=%u\r\n", SystemSettings.reset_design_on_load);
+			SENDSWAPSTR("set.debug_level=%u\r\n", SystemSettings.debug_level);
 			break;
 
 		case RUN_FACTORY_TEST:

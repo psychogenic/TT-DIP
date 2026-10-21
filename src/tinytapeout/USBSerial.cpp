@@ -7,6 +7,7 @@
  */
 
 #include "includes/USBSerial.h"
+#include "includes/settings.h"
 
 namespace TinyTapeout {
 
@@ -53,7 +54,7 @@ void USBSerial::outputDebugMessage(uint8_t level, const char * s) {
 			"INFO",
 			"DEBUG"
 	};
-	if (level > USBSERIAL_DEBUG_LEVEL) {
+	if (level > SystemSettings.debug_level) {
 		return;
 	}
 	printf("%s: %s\r\n", lvls[level], s);

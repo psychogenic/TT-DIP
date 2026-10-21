@@ -47,5 +47,6 @@ Settings_t SystemSettings = {
 		.echo_on = TTDIP_USB_SERIAL_ECHO,
 		.mux_driven_externally = TT_DIP_MUX_EXTERNALLY_DRIVEN,
 		.clock_rst_driven_externally = TT_DIP_CLOCK_AND_RESET_EXTERNALLY_DRIVEN,
-		.reset_design_on_load = TT_DIP_RESET_DESIGN_ON_LOAD
+		.reset_design_on_load = TT_DIP_RESET_DESIGN_ON_LOAD,
+		.debug_level = USBSERIAL_DEBUG_LEVEL
 };

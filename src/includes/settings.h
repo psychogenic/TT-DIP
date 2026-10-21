@@ -41,6 +41,7 @@ typedef struct settingsstruct {
 	/* don't load/use project clock and reset, drive using physical pins externally */
 	uint8_t		clock_rst_driven_externally;
 	uint8_t 	reset_design_on_load;
+	uint8_t		debug_level;
 
 
 } Settings_t;
