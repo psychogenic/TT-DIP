@@ -113,5 +113,52 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="55e0", GROUP="plugde
 Even so, there are occasions where the process fails to complete.  meh.  Recipe so far is just to unplug and try again.
 
 
+# Development
 
+Some notes if you want to modify or extend the firmware.
+
+## Architecture
+
+The `main()` function is in a pure C file, [tinytapeout_dip.c](src/tinytapeout_dip.c), and pretty much everything else is C++ and is relatively simple.
+
+Most the configuration options you set using #defines as described above are actually held in a mutable [Settings struct](src/includes/settings.h#L33), accessible to the code.
+
+The code uses [ch32fun](https://github.com/cnlohr/ch32fun) on a CH32X035 chip to provide the USB serial TUI and handle project selection and control, hiding most of the ch32 stuff within `Platform::IC` ([IC.h](src/includes/platform/IC.h)) and `Platform::Clock` ([Clock.h](src/includes/platform/Clock.h)).
+
+Tiny Tapeout specifics are mostly related to the ASIC MUX, and the `TinyTapeout::ProjectMux` class ([ProjectMux.h](src/includes/ProjectMux.h)) handles the details on that front.  `TinyTapeout::Driver` is the main entry point into the system ([Driver.h](src/includes/Driver.h)), handling initialization, auto-detections, and being `tick()`ed to handle commands coming in from the USB serial, using the `TinyTapeout::CommandInterpreter` ([CommandInterpreter.h](src/includes/CommandInterpreter.h)).
+
+All the functionality of the commands is just in a big switch in the `TinyTapeout::Command` ([Command.h](src/includes/Command.h)) [execute() method](src/tinytapeout/Command.cpp#L89).
+
+## Desktop Dev
+
+To ease and speed up development, it's possible to run the firmware on the desktop (at least under linux, and probably anything that supports make and ncurses) to interact with the TUI live and use gdb.
+
+To build it, you just need to 
+
+```
+cd src
+make -f test.mk clean
+make -f test.mk 
+```
+
+Then run `./test`.  Issue a `?` to see the menu of available commands and issue whatever you like, eg
+
+```
+select_design(3, 1000000)
+dump_state()
+dump_settings()
+```
+
+## Debug Output
+
+You'll find the code strewn with calls to `USBSerial::outputInfo()`, `USBSerial::outputDebug()` etc.  This output will go to the terminal according to the level set by the `USBSERIAL_DEBUG_LEVEL` (default set in [TTDIPconfig.h](src/includes/TTDIPconfig.h), but may be overidden during build as it is in [test.mk](src/test.mk#L7)).
+
+
+# Copyright and License
+
+This firmware is 
+```
+Copyright (C) 2026 Pat Deegan, [psychogenic.com](https://psychogenic.com)
+```
+and released under the terms of the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html). See the LICENSE file for details.
 
