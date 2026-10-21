@@ -19,7 +19,7 @@
  * Default project loaded
  *
  * If TT_DIP_DEFAULT_DESIGN_ID is non-zero,
- * this project will be loaded, and reset, on startup.
+ * this project will be loaded on startup.
  *
  * If TT_DIP_DEFAULT_CLOCK_HZ is also non-zero, it will
  * be clocked as well (if TT_DIP_RESET_DESIGN_ON_LOAD)
@@ -33,6 +33,13 @@
 #define TT_DIP_DEFAULT_DESIGN_ID		0
 #define TT_DIP_DEFAULT_CLOCK_HZ			10
 
+
+
+/*
+ * TT_DIP_RESET_DESIGN_ON_LOAD
+ * When non-zero, will reset projects after selecting
+ * them with the MUX.
+ */
 #define TT_DIP_RESET_DESIGN_ON_LOAD		1
 
 

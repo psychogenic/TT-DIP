@@ -102,9 +102,10 @@ void IC::projectReset(bool inreset) {
 	}
 	if (inreset) {
 		// active LOW reset
+		modeOutput(TTDIP_PIN_PROJECT_RESET);
 		writeLow(TTDIP_PIN_PROJECT_RESET);
 	} else {
-		writeHigh(TTDIP_PIN_PROJECT_RESET);
+		modeInputPull(TTDIP_PIN_PROJECT_RESET, true);
 	}
 }
 void IC::writeHigh(uint8_t pin) {
