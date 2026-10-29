@@ -14,7 +14,6 @@
  */
 #define TTDIP_NUM_CLOCKS_ON_PROJ_RESET	5
 
-
 #ifndef DESKTOP_DEBUG
 /* actual MCU pins and ports */
 
@@ -32,15 +31,8 @@
  * TODO: FIXME -- set to PA3 for new boards
  */
 #define TTDIP_PIN_CLOCK_PIN			PA5
-//define TTDIP_PIN_CLOCK_PIN		PA3
+// #define TTDIP_PIN_CLOCK_PIN		PA3
 
-#if TTDIP_PIN_CLOCK_PIN == PA3
-#define TTDIP_CLOCK_USE_PA3
-#define TTDIP_PIN_CLOCK_PORTPIN		3
-#else
-#define TTDIP_CLOCK_USE_TIM3
-#define TTDIP_PIN_CLOCK_PORTPIN		5
-#endif
 
 
 // Define TTDIP_CLOCK_PULLUP_ENABLE to have the
@@ -61,8 +53,7 @@
 #else
 /* desktop sim ... values matter little */
 #define TTDIP_PIN_CLOCK_PORT		0
-#define TTDIP_PIN_CLOCK_PORTPIN		5
-#define TTDIP_PIN_CLOCK_PIN			TTDIP_PIN_CLOCK_PORTPIN
+#define TTDIP_PIN_CLOCK_PIN			22
 
 #define TTDIP_PIN_PROJECT_RESET		4
 
@@ -72,10 +63,16 @@
 
 #define TTDIP_PIN_UIIN0				6i
 
-
-
 #endif /* DESKTOP_DEBUG */
 
 
+#if defined(PA3) && TTDIP_PIN_CLOCK_PIN == PA3
+#define TTDIP_CLOCK_USE_PA3
+#define TTDIP_PIN_CLOCK_PORTPIN		3
+#error HO
+#else
+#define TTDIP_CLOCK_USE_TIM3
+#define TTDIP_PIN_CLOCK_PORTPIN		5
+#endif
 
 #endif /* SRC_INCLUDES_PLATFORM_PLATFORMCONFIG_H_ */
