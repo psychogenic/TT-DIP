@@ -90,7 +90,7 @@ void IC::modeInput(uint8_t pin) {
 }
 
 void IC::modeOutput(uint8_t pin, GPIOSpeed_TypeDef slew) {
-	funPinMode(PC1, slew | GPIO_CNF_OUT_PP);
+	funPinMode(pin, slew | GPIO_CNF_OUT_PP);
 }
 uint8_t IC::digitalRead(uint8_t pin) {
 	return funDigitalRead(pin);
