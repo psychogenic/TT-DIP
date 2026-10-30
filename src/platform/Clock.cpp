@@ -14,8 +14,10 @@ extern "C" {
 
 #ifdef DESKTOP_DEBUG
 
-#define PWM_PA3_Init(hz)	hz
+#define PWM_PA3_Init(hz)			hz
 #define Timer_Interrupt_Init(hz)	hz
+#define Timer_Interrupt_Stop()
+#define PWM_PA3_Stop()
 #else
 static uint8_t tog_count = 0;
 void TIM3_IRQHandler(void) __attribute__((interrupt));
@@ -152,6 +154,21 @@ uint32_t PWM_PA3_Init(uint32_t frequency_hz)
 	return actual_hz;
 }
 
+void PWM_PA3_Stop(void)
+{
+    // Disable the channel output, pin goes to the inactive state
+    TIM2->CCER &= ~TIM_CC4E;
+
+    // Clear main output enable
+    TIM2->BDTR &= ~TIM_MOE;
+
+    // Stop the counter
+    TIM2->CTLR1 &= ~TIM_CEN;
+
+    // Clear any pending update flag
+    TIM2->INTFR = ~TIM_UIF;
+}
+
 
 uint32_t Timer_Interrupt_Init(uint32_t frequency_hz)
 {
@@ -174,6 +191,22 @@ uint32_t Timer_Interrupt_Init(uint32_t frequency_hz)
 	TIM3->CTLR1 |= TIM_CEN;     // start the timer
 
 	return actual_hz/2;
+}
+
+
+void Timer_Interrupt_Stop(void)
+{
+    // Prevent further update events from generating interrupts
+    TIM3->DMAINTENR &= ~TIM_UIE;
+
+    // Stop the counter
+    TIM3->CTLR1 &= ~TIM_CEN;
+
+    // Clear any pending update flag (UG or overflow may have set UIF)
+    TIM3->INTFR = ~TIM_UIF;
+
+    // mask the IRQ in the NVIC
+    NVIC_DisableIRQ(TIM3_IRQn);
 }
 
 #endif
@@ -218,6 +251,12 @@ void Clock::stop(void)
 	if (!clock_rate_hz) {
 		return;
 	}
+#ifdef TTDIP_CLOCK_USE_PA3
+	PWM_PA3_Stop();
+#else
+	Timer_Interrupt_Stop();
+#endif
+
 #ifdef TTDIP_CLOCK_PULLUP_ENABLE
 	TinyTapeout::Globals::chip()->modeInputPull(TTDIP_PIN_CLOCK_PIN, true);
 #else
