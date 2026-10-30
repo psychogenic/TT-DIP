@@ -21,7 +21,7 @@
 #endif
 
 
-#define TTDIP_FIRMWARE_VERSION		"0.9.2"
+#define TTDIP_FIRMWARE_VERSION		"0.9.4"
 
 
 #define TT_DUMMYROM_REPO	"TinyTapeout/tinytapeout-gf-0p2"
@@ -48,6 +48,7 @@
 #define TT_DUMMYROM_CONTENTS	"commit=" TT_DUMMYROM_COMMIT "\r\n" \
 								"repo=" TT_DUMMYROM_REPO "\r\n" \
 								"shuttle=" TT_DUMMYROM_SHUTTLE "\r\n" \
+								"board=dip\r\n" \
 								"dipfw=" TTDIP_FIRMWARE_VERSION "\r\n"
 
 #endif /* SRC_INCLUDES_TTDIPCONFIG_H_ */
