@@ -30,8 +30,8 @@
  *
  * TODO: FIXME -- set to PA3 for new boards
  */
-#define TTDIP_PIN_CLOCK_PIN			PA5
-// #define TTDIP_PIN_CLOCK_PIN		PA3
+// #define TTDIP_PIN_CLOCK_PIN			PA5
+#define TTDIP_PIN_CLOCK_PIN		PA3
 
 
 
@@ -69,7 +69,6 @@
 #if defined(PA3) && TTDIP_PIN_CLOCK_PIN == PA3
 #define TTDIP_CLOCK_USE_PA3
 #define TTDIP_PIN_CLOCK_PORTPIN		3
-#error HO
 #else
 #define TTDIP_CLOCK_USE_TIM3
 #define TTDIP_PIN_CLOCK_PORTPIN		5
