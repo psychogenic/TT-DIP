@@ -31,7 +31,13 @@ void TIM3_IRQHandler(void)
 }
 #endif
 }
-
+#ifdef TTDIP_CLOCK_USE_PA3
+// 24MHz is max theoretical for the PWM, afaik
+#define TTDIP_MAX_CLOCK_RATE_HZ		24000000
+#else
+// things freeze up beyond ~225kHz with the timer
+#define TTDIP_MAX_CLOCK_RATE_HZ 	225000
+#endif
 
 namespace Platform {
 
@@ -156,6 +162,7 @@ uint32_t PWM_PA3_Init(uint32_t frequency_hz)
 
 void PWM_PA3_Stop(void)
 {
+	// DEBUG_CLOCK_OUT("Stop clock PWM\r\n");
     // Disable the channel output, pin goes to the inactive state
     TIM2->CCER &= ~TIM_CC4E;
 
@@ -196,6 +203,8 @@ uint32_t Timer_Interrupt_Init(uint32_t frequency_hz)
 
 void Timer_Interrupt_Stop(void)
 {
+
+	// DEBUG_CLOCK_OUT("Stop clock Timer\r\n");
     // Prevent further update events from generating interrupts
     TIM3->DMAINTENR &= ~TIM_UIE;
 
@@ -228,6 +237,12 @@ ClockRateHz Clock::start(ClockRateHz hz)
 		return 0;
 	}
 
+	if (hz > TTDIP_MAX_CLOCK_RATE_HZ) {
+		hz = TTDIP_MAX_CLOCK_RATE_HZ;
+		DEBUG_CLOCK_OUT("Set to MAX clock rate %luHz\r\n", (unsigned long)hz);
+
+	}
+
 #ifdef DESKTOP_DEBUG
 	DEBUG_CLOCK_OUT("(Not) clocking at %lu Hz\r\n", (unsigned long)hz);
 	clock_rate_hz = hz;
@@ -243,12 +258,13 @@ ClockRateHz Clock::start(ClockRateHz hz)
     uint32_t actual_hz = Timer_Interrupt_Init(hz);
 #endif
 	DEBUG_CLOCK_OUT("Clocking at %lu Hz\r\n", (unsigned long)actual_hz);
-
+	clock_rate_hz = actual_hz;
     return clock_rate_hz;
 }
 void Clock::stop(void)
 {
 	if (!clock_rate_hz) {
+		// DEBUG_CLOCK_OUT("Clock not running\r\n");
 		return;
 	}
 #ifdef TTDIP_CLOCK_USE_PA3
